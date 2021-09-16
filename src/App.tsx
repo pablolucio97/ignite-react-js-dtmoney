@@ -4,6 +4,7 @@ import { GlobalStyle } from "./styles/GlobalStyle";
 import { createServer, Model } from 'miragejs'
 import { useState } from "react";
 import { NewTransactionModal } from "./components/NewTransactionModal";
+import { TransactionsProvider } from "./context/TransactionsContext";
 
 
 function App() {
@@ -63,7 +64,7 @@ function App() {
   })
 
   return (
-    <>
+    <TransactionsProvider>
       <GlobalStyle />
       <Header handleOpenNewTransactionModal={handleOpenNewTransactionModal} />
       <Dashboard />
@@ -72,7 +73,7 @@ function App() {
         onRequestClose={handleCloseNewTransactionModal}
       />
 
-    </>
+    </TransactionsProvider>
   );
 }
 

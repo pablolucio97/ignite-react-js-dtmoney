@@ -5,7 +5,7 @@ import { Container, RadioBox, TransactionTypesCoontainer } from './styles'
 import closeImg from '../../assets/close.svg'
 import incomeImg from '../../assets/income.svg'
 import outcomeImg from '../../assets/outcome.svg'
-import { api } from '../../services/api'
+import { useTransactions } from '../../hooks/useTransactions'
 
 type NewTransactionModalProps = {
     isOpen: boolean;
@@ -15,25 +15,31 @@ type NewTransactionModalProps = {
 
 export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionModalProps) {
 
+    const { handleCreateNewTransaction } = useTransactions()
+
     const [type, setType] = useState('deposit')
     const [title, setTitle] = useState('')
-    const [value, setValue] = useState(0)
+    const [amount, setAmount] = useState(0)
     const [category, setCategory] = useState('')
 
-    function handleCreateNewTransaction(e: FormEvent) {
-        e.preventDefault()
+    async function createTransaction(e: FormEvent) {
+        e.preventDefault();
 
-        const data = {
+        await handleCreateNewTransaction({
             title,
-            value,
-            type,
-            category
-        }
-
-        api.post('/transactions', data)
+            amount,
+            category,
+            type
+        })
 
 
+        setTitle('')
+        setAmount(0)
+        setCategory('')
+        setType('deposit')
+        onRequestClose()
     }
+
     return (
         <Modal
             isOpen={isOpen}
@@ -47,7 +53,7 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
             >
                 <img src={closeImg} alt="dt money" />
             </button>
-            <Container onSubmit={handleCreateNewTransaction}>
+            <Container onSubmit={createTransaction}>
                 <h2>Cadastrar transação</h2>
                 <input
                     type="text"
@@ -58,8 +64,8 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
                 <input
                     type="number"
                     placeholder="Valor"
-                    value={value}
-                    onChange={e => setValue(e.target.valueAsNumber)}
+                    value={amount}
+                    onChange={e => setAmount(e.target.valueAsNumber)}
                 />
 
                 <TransactionTypesCoontainer>
